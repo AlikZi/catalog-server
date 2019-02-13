@@ -174,6 +174,69 @@ Save in the suggested directory, such as '/Users/< username >/.ssh/< keyname >'.
 		`sudo ufw status`
 
 
+## **Step 5** Installing Apache and mod_wsgi
+
+1. Install Apache using your package manager with the following command,
+confirm that Apache is working by visiting your Public IP: 
+
+` sudo apt-get install apache2`
+
+2. Install mod_wsgi: 
+
+`sudo apt-get install libapache2-mod-wsgi`
+
+3. Delete the directory /var/www/html
+
+`sudo rm -rf /var/www/html`
+
+4. Create the new directory
+
+`sudo mkdir /var/www/catalog`
+
+5. Create a test file inside 'catalog' directory with the **fig-a** text, save the file:
+
+`sudo nano /var/www/catalog/catalog.wsgi`
+
+**fig-a**
+```shell
+def application(environ, start_response):
+    status = '200 OK'
+    output = 'Hello World!'
+
+    response_headers = [('Content-type', 'text/plain'), ('Content-Length', str(len(output)))]
+    start_response(status, response_headers)
+
+    return [output]
+```
+
+6. Go to Apache configuration files:
+
+`cd /etc/apache2/sites-available`
+
+7. Copy default file
+
+`sudo cp 000-default.conf catalog.conf`
+
+8. Make chages to to file. 
+	- `sudo nano catalog.conf`
+	- Change from `DocumentRoot /var/www/html` to `DocumentRoot /var/www`
+	- Before closing tag </VirtualHost> insert `WSGIScriptAlias / /var/www/catalog/catalog.wsgi`
+	- Close and Save the file
+
+9. Disable 000-default and enable catalog.conf, reload Apache after:
+
+	- `a2dissite 000-default`
+	- `sudo a2ensite catalog`
+	- `sudo service apache2 reload`
+
+10. Go to Public IP address, it should display 'Hello World' message.
+
+
+## Reference
+1. [DigitalOcean. How To Install the Apache Web Server on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-16-04)
+2. [DigitalOcean. How To Configure the Apache Web Server on an Ubuntu or Debian VPS](How To Configure the Apache Web Server on an Ubuntu or Debian VPS)
+3. [DigitalOcean. How To Deploy a Flask Application on an Ubuntu VPS](https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps)
+
 
 
 
